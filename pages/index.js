@@ -23,8 +23,11 @@ export default function Home() {
       {articles.length === 0 && <p>Loading ...</p>}
       {articles.length > 0 && articles.map(art, index => {
         <article key={index}>
-          <img src={art.urlToImage}/>
-          <h2>
+          <img 
+            alt={`Image for the article ${art.title}`} 
+            src={art.urlToImage}
+          />
+          <h2> 
               {art.title}
           </h2>
           <p>
