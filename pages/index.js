@@ -5,23 +5,13 @@ import styles from '../styles/Home.module.css'
 import PageLayout from '../components/PageLayout'
 import { useEffect, useState } from 'react'
 
-export default function Home() {
-  const [articles, setArticles] = useState([])
-
-  useEffect(() => {
-    fetch('https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=ad64c8bce4954149826c2db88c6dddec')
-    .then(res => res.json())
-    .then(response => {
-      const articlesFetched = response.articles;
-      setArticles(articlesFetched)
-    })
-  },[])
-
+export default function Home({ articles }) {
+  
   console.log('articulos recibidos de la api', articles)
   return (
     <PageLayout title='NewsApp - Home'>
       <div className={styles.container}>
-        {articles.length === 0 && <p>Loading ...</p>}
+        {articles.length === 0 && <p>No tenemos articulos</p>}
         {articles.length > 0 && articles.map((art, index) => ( 
           <article key={index}>
             <img 
@@ -39,4 +29,15 @@ export default function Home() {
   )
 }
 
+export async function getServerSideProps() {
+  const response = await fetch('https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=ad64c8bce4954149826c2db88c6dddec', {
+    method: 'GET'
+  })
+  const { articles } = await response.json()
+    return {
+      props: {
+        articles
+      }
+    }
+}
 

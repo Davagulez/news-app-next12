@@ -1,0 +1,8 @@
+.main{
+    text-align: center;
+    width: 90vw;
+    height: 100vh;
+    margin: auto;
+    display: grid;
+    place-content: center;
+}
