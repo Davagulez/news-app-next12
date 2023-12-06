@@ -1,18 +1,19 @@
 import styles from '../styles/Grafico.module.css'
 import GraphicLayout from '../components/GraphicLayout'
+import PageLayout from '../components/PageLayout'
 import { useState, useEffect } from 'react'
 
 export default function VistaGrafico() {
     const [data, setData] = useState([])
+    const [error, setError] = useState(null)
 
     async function getData() {
         try {
             const response = await fetch('datos-AMZN_GOOGL.json')
             const data = await response.json()
             setData(data)
-            console.log(data)
         } catch (error) {
-            return error 
+            setError(error)
         }
     }
 
@@ -25,11 +26,14 @@ export default function VistaGrafico() {
     
 
     return (
-        <main className={styles.main}>
-            <h1> Esta es la pagina donde voy a colocar el gráfico</h1>
-            {data && data.length === 0 && <p>Cargando ...</p>}
-            {data && data.length > 0 && < GraphicLayout info={data}/>}
-        </main>
+        <PageLayout>
+            <main className={styles.main}>
+                <h1> gráfico AMZN_GOOGL para mostrarlo en el cliente con todos los items</h1>
+                {/* {data && data.length === 0 && <p>Cargando ...</p>} */}
+                {data && < GraphicLayout info={data}/>}
+                {error && <h1>Error: {error}</h1>}
+            </main>
+        </PageLayout>
     )
 }
 

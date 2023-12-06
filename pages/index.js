@@ -7,16 +7,20 @@ import { useEffect, useState } from 'react'
 
 export default function Home({ articles }) {
   
-  console.log('articulos recibidos de la api', articles)
   return (
     <PageLayout title='NewsApp - Home'>
       <div className={styles.container}>
         {articles.length === 0 && <p>No tenemos articulos</p>}
         {articles.length > 0 && articles.map((art, index) => ( 
           <article key={index}>
-            <img 
+            <Image 
               alt={`Image for the article ${art.title}`} 
-              src={art.urlToImage === null ? '/404notfound.jpg' : art.urlToImage}
+              src={'/404notfound.jpg'}
+              /* src={art.urlToImage === null ? '/404notfound.jpg' : art.urlToImage} */
+              width={400}
+              height={400}
+              layout='responsive'
+              priority={true}
               className={styles.image}
             />
             <h2>{art.title}</h2>

@@ -1,0 +1,8 @@
+.chartContainer{
+    width: 100%;
+    max-width: 1500px;
+    height: 80vh;
+    max-height: 600px;
+   display: grid;
+   place-content: center;
+}
