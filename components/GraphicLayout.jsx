@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import styles from '../styles/GraphicLayout.module.css'
 
 function filteredData(data) {
-    return data.reduce((acc, current) => {
+    const filtered = data.reduce((acc, current) => {
         const x = acc.find(item => Math.floor(new Date(item.fecha).getTime() / 1000) === Math.floor(new Date(current.fecha).getTime() / 1000));
         if (!x) {
             return acc.concat([current]);
@@ -12,6 +12,8 @@ function filteredData(data) {
             return acc;
         }
     }, []);
+    const sortedData = filtered.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+    return sortedData;
 }
 
 export default function GraphicLayout({ info }) {
@@ -25,14 +27,12 @@ export default function GraphicLayout({ info }) {
 
     }
 
-
     useEffect(() => {
         const datos = info && info.data ? info.data : [];
+        const sortedData = filteredData(datos)
         let chartData = {}
 
         if (datos && datos.length > 0) {
-
-            const sortedData = filteredData(datos).sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
 
             chartData = {
                 ratio: sortedData.map(item => ({
@@ -89,9 +89,6 @@ export default function GraphicLayout({ info }) {
             lineSeries.setData(chartData[serie]);
         }
 
-
-        console.log(chartData.ratio)
-
         window.addEventListener('resize', handleResize);
 
         return () => {
@@ -100,7 +97,6 @@ export default function GraphicLayout({ info }) {
         }
 
     }, [info])
-
 
     return (
         <article ref={chartContainerRef} className={styles.chartContainer}></article>

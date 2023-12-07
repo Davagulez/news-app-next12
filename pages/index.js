@@ -9,26 +9,30 @@ export default function Home({ articles }) {
   
   return (
     <PageLayout title='NewsApp - Home'>
-      <div className={styles.container}>
+      <section className={styles.container}>
         {articles.length === 0 && <p>No tenemos articulos</p>}
         {articles.length > 0 && articles.map((art, index) => ( 
-          <article key={index}>
-            <Image 
-              alt={`Image for the article ${art.title}`} 
-              src={'/404notfound.jpg'}
-              /* src={art.urlToImage === null ? '/404notfound.jpg' : art.urlToImage} */
-              width={400}
-              height={400}
-              layout='responsive'
-              priority={true}
-              className={styles.image}
-            />
-            <h2>{art.title}</h2>
-            <p>{art.description}</p>
+          <article key={index} className={styles.article}>
+            <figure className={styles.image_container}>
+              <Image 
+                alt={`Image for the article ${art.title}`} 
+                src={'/404notfound.jpg'}
+                /* src={art.urlToImage === null ? '/404notfound.jpg' : art.urlToImage} */
+                width={400}
+                height={400}
+                layout='responsive'
+                priority={true}
+                className={styles.image}
+              />
+            </figure>
+            <section className={styles.main_texts}>
+              <h2 className={styles.title}>{art.title}</h2>
+              <p className={styles.paragraph}>{art.description}</p>
+            </section>
           </article>
         ))}
         <Link href='/about'> ir a About</Link>     
-      </div>
+      </section>
     </PageLayout>
   )
 }
