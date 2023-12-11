@@ -2,43 +2,45 @@ import styles from '../styles/Grafico.module.css'
 import GraphicLayout from '../components/GraphicLayout'
 import PageLayout from '../components/PageLayout'
 import { useState, useEffect } from 'react'
+import getDataFromJSON from './api/getDataFromJSON'
 
-export default function VistaGrafico() {
-    const [data, setData] = useState([])
-    const [error, setError] = useState(null)
 
-    async function getData() {
-        try {
-            const response = await fetch('datos-AMZN_GOOGL.json')
-            const data = await response.json()
-            setData(data)
-        } catch (error) {
-            setError(error)
-        }
-    }
+export default function VistaGrafico({ data }) {
+    const [dataFromJSON, setDataFromJSON] = useState([])
 
     useEffect(() => {
-        getData();
-      return () => {
-        setData([])
-      }
-    }, [])
+        setDataFromJSON(data)
+    }, [data])
     
-
     return (
         <PageLayout>
             <main className={styles.main}>
                 <h1> gráfico AMZN_GOOGL para mostrarlo en el cliente con todos los items</h1>
-                {/* {data && data.length === 0 && <p>Cargando ...</p>} */}
-                {data && < GraphicLayout info={data}/>}
-                {error && <h1>Error: {error}</h1>}
+                {dataFromJSON && < GraphicLayout info={dataFromJSON}/>}
             </main>
         </PageLayout>
     )
 }
 
-// export async function getStaticProps() {
-//     const response = await fetch('datos-AMZN_GOOGL.json')
-//     const data = await response.json()
-//     return data
-// }
+export async function getServerSideProps() {
+    let data
+    try {
+        data = await getDataFromJSON();
+    } catch (error) {
+        return {
+            notFound: true
+        }
+    }
+
+    if (!data) {
+        return {
+            notFound: true
+        }
+    }
+    
+    return {
+        props: {
+            data
+        }
+    }
+}

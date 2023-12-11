@@ -11,3 +11,6 @@
     width: 40%;
 }
 
+.grapContainer {
+    z-index: 10;
+}

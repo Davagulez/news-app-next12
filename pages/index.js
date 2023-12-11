@@ -17,7 +17,6 @@ export default function Home({ articles }) {
               <Image 
                 alt={`Image for the article ${art.title}`} 
                 src={'/404notfound.jpg'}
-                /* src={art.urlToImage === null ? '/404notfound.jpg' : art.urlToImage} */
                 width={400}
                 height={400}
                 layout='responsive'

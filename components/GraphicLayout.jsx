@@ -2,6 +2,7 @@
 import { createChart, ColorType } from 'lightweight-charts';
 import { useState, useEffect, useRef } from 'react';
 import styles from '../styles/GraphicLayout.module.css'
+import { GraphicLoader } from '../assets/Icons'
 
 function filteredData(data) {
     const filtered = data.reduce((acc, current) => {
@@ -17,6 +18,7 @@ function filteredData(data) {
 }
 
 export default function GraphicLayout({ info }) {
+    const [isLoading, setIsLoading] = useState(true)
     const chartContainerRef = useRef();
 
     const colors = {
@@ -61,7 +63,9 @@ export default function GraphicLayout({ info }) {
         }
 
         const handleResize = () => {
-            chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+            chart.applyOptions({ 
+                width: chartContainerRef.current.clientWidth
+            });
         };
 
         const chart = createChart(chartContainerRef.current, {
@@ -70,26 +74,36 @@ export default function GraphicLayout({ info }) {
                 textColor: colors.textColor,
             },
             width: chartContainerRef.current.clientWidth,
-            /* height: 500 */
+            timeScale: {
+                timeVisible: true,
+                secondsVisible: false
+            }
         });
         chart.timeScale().fitContent();
 
         // Define un objeto de colores para cada serie
         const seriesColors = {
-            ratio: '#00668c',
-            max: '#c21d03',
-            min: '#c21d03',
-            banda_superior: '#151931',
+            ratio: '#005461',
+            max: '#FF6600',
+            min: '#25b1bf',
+            banda_superior: '#bb2649',
             banda_inferior: '#151931'
         };
 
         // Agrega cada serie al gráfico con su color correspondiente
         for (const serie in chartData) {
-            const lineSeries = chart.addLineSeries({ lineColor: seriesColors[serie] });
+            let lineSeries = ({})
+            if (serie === 'ratio') {
+                lineSeries = chart.addLineSeries({ color: seriesColors[serie] });
+            } else {
+                lineSeries = chart.addLineSeries()
+                lineSeries.applyOptions({ color: seriesColors[serie]})
+            }
             lineSeries.setData(chartData[serie]);
         }
 
         window.addEventListener('resize', handleResize);
+        setIsLoading(false);
 
         return () => {
             window.removeEventListener('resize', handleResize)
@@ -99,6 +113,10 @@ export default function GraphicLayout({ info }) {
     }, [info])
 
     return (
-        <article ref={chartContainerRef} className={styles.chartContainer}></article>
+        <>
+            <article ref={chartContainerRef} className={styles.chartContainer}>
+                {isLoading && <div>Cargando ...</div>}
+            </article>   
+        </>
     )
 }
