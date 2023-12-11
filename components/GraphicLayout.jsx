@@ -63,7 +63,7 @@ export default function GraphicLayout({ info }) {
         }
 
         const handleResize = () => {
-            chart.applyOptions({ 
+            chart.applyOptions({
                 width: chartContainerRef.current.clientWidth
             });
         };
@@ -77,10 +77,18 @@ export default function GraphicLayout({ info }) {
             timeScale: {
                 timeVisible: true,
                 secondsVisible: false
+            },
+            grid: {
+                vertLines: {
+                    visible: false,
+                },
+                horzLines: {
+                    visible: false,
+                },
             }
         });
         chart.timeScale().fitContent();
-
+        
         // Define un objeto de colores para cada serie
         const seriesColors = {
             ratio: '#005461',
@@ -97,12 +105,24 @@ export default function GraphicLayout({ info }) {
                 lineSeries = chart.addLineSeries({ color: seriesColors[serie] });
             } else {
                 lineSeries = chart.addLineSeries()
-                lineSeries.applyOptions({ color: seriesColors[serie]})
+                lineSeries.applyOptions({ color: seriesColors[serie] })
             }
             lineSeries.setData(chartData[serie]);
         }
 
+        // Create and style the tooltip html element
+        const toolTip = document.createElement('div');
+        toolTip.style = `width: 96px; height: 80px; position: absolute; display: none; padding: 8px; box-sizing: border-box; font-size: 12px; text-align: left; z-index: 1000; top: 12px; left: 12px; pointer-events: none; border: 1px solid; border-radius: 2px;font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;`;
+        toolTip.style.background = 'white';
+        toolTip.style.color = 'black';
+        toolTip.style.borderColor = '#2962FF';
+        chartContainerRef.current.appendChild(toolTip);
+
+        // TODO: update tooltip with numbers position 
+        // ---
+
         window.addEventListener('resize', handleResize);
+
         setIsLoading(false);
 
         return () => {
@@ -116,7 +136,7 @@ export default function GraphicLayout({ info }) {
         <>
             <article ref={chartContainerRef} className={styles.chartContainer}>
                 {isLoading && <div>Cargando ...</div>}
-            </article>   
+            </article>
         </>
     )
 }
