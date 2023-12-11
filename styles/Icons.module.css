@@ -1,17 +1,22 @@
 
-.loading .svg .polyline {
+.svg{
+    width: 100px;
+    height: 100px;
+}
+
+.polyline {
     fill: none;
     stroke-width: 3;
     stroke-linecap: round;
     stroke-linejoin: round;
 }
 
-.loading .svg .polyline#back {
+.polyline#back {
     fill: none;
-    stroke: white;
+    stroke: #ff4d5033;
 }
 
-.loading .svg .polyline#front {
+.polyline#front {
     fill: none;
     stroke: #ff4d4f;
     stroke-dasharray: 48, 144;

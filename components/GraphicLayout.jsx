@@ -135,7 +135,7 @@ export default function GraphicLayout({ info }) {
     return (
         <>
             <article ref={chartContainerRef} className={styles.chartContainer}>
-                {isLoading && <div>Cargando ...</div>}
+                {isLoading && < GraphicLoader />}
             </article>
         </>
     )
