@@ -5,4 +5,5 @@
     max-height: 600px;
    display: grid;
    place-content: center;
+   position: relative;
 }
