@@ -23,12 +23,14 @@ export default function GraphicLayout({ info }) {
 
     const colors = {
         backgroundColor: '#fffefb',
+        backgroundColor2: '#0F1C2E',
         textColor: '#1d1c1c',
         areaTopColor: '#FF3D3D',
         areaBottomColor: '#1A1F2B',
 
     }
 
+    const nombreSeries = ['banda_superior','max','ratio','min','banda_inferior']
     useEffect(() => {
         const datos = info && info.data ? info.data : [];
         const sortedData = filteredData(datos)
@@ -70,7 +72,7 @@ export default function GraphicLayout({ info }) {
 
         const chart = createChart(chartContainerRef.current, {
             layout: {
-                background: { type: ColorType.Solid, color: colors.backgroundColor },
+                background: { type: ColorType.Solid, color: colors.backgroundColor2 },
                 textColor: colors.textColor,
             },
             width: chartContainerRef.current.clientWidth,
@@ -91,53 +93,64 @@ export default function GraphicLayout({ info }) {
         
         // Define un objeto de colores para cada serie
         const seriesColors = {
-            banda_superior: '#bb2649',
-            max: '#FF6600',
-            ratio: '#005461',
-            min: '#25b1bf',
-            banda_inferior: '#151931'
+            banda_superior: { color: '#bb2649', name: 'Banda Superior' },
+            max: { color: '#FF6600', name: 'Max' },
+            ratio: { color: '#f5f5e9', name: 'Ratio' },
+            min: { color: '#25b1bf', name: 'Min' },
+            banda_inferior: { color: '#005161', name: 'Banda Inferior' }
         };
 
+        //banda_inferior color en modo dia : #151931
+
         // Agrega cada serie al gráfico con su color correspondiente
+        let lineSeriesObject = {};
+
         for (const serie in chartData) {
-            let lineSeries = ({})
+            let lineSeries;
             if (serie === 'ratio') {
-                lineSeries = chart.addLineSeries({ color: seriesColors[serie] });
+                lineSeries = chart.addLineSeries({ color: seriesColors[serie].color });
             } else {
-                lineSeries = chart.addLineSeries()
-                lineSeries.applyOptions({ color: seriesColors[serie] })
+                lineSeries = chart.addLineSeries();
+                lineSeries.applyOptions({ color: seriesColors[serie].color });
             }
             lineSeries.setData(chartData[serie]);
+            lineSeriesObject[serie] = lineSeries;
         }
 
-        // Create and style the tooltip html element
+
+        // Creo y le doy estilo al toolTip
         const toolTip = document.createElement('div');
-        toolTip.style = `width: 120px; height: 100px; position: absolute; display: none; padding: 8px; box-sizing: border-box; font-size: 12px; text-align: left; z-index: 1000; top: 12px; left: 12px; pointer-events: none; border: 1px solid; border-radius: 2px;font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;`;
-        toolTip.style.background = 'white';
+        toolTip.style = `width: 200px; height: 100px; position: absolute; display: none; padding: 8px; box-sizing: border-box; font-size: 12px; text-align: left; z-index: 1000; top: 12px; left: 12px; pointer-events: none; border: 1px solid; border-radius: 2px;font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;`;
+        toolTip.style.background = '#cee8ff';
         toolTip.style.color = 'black';
         toolTip.style.borderColor = '#2962FF';
         chartContainerRef.current.appendChild(toolTip);
 
+
         // Capturo el movimiento del mouse para visualizar el toolTip
         chart.subscribeCrosshairMove(function(param) {
-            console.log(param.seriesData)
             if (param.point === undefined ||
                 param.time === undefined ||
                 param.seriesData.size === 0 ) {
                 toolTip.style.display = 'none';
             } else {
                 toolTip.style.display = 'block';
-                toolTip.style.position = 'absolute'
+                toolTip.style.position = 'absolute';
                 toolTip.style.left = '10px';
                 toolTip.style.top = '10px';
                 toolTip.innerHTML = '';
-
-                param.seriesData.forEach((data) => {
-                    toolTip.innerHTML += `<div> valor: ${data.value.toFixed(2)}</div>`;
-                });
-
+        
+                for (const serie in lineSeriesObject) {
+                    const data = param.seriesData.get(lineSeriesObject[serie]);
+                    if (data !== undefined) {
+                        // Include a colored circle for each line
+                        toolTip.innerHTML += `<div><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${seriesColors[serie].color}; margin-right:5px;"></span>${seriesColors[serie].name}: ${data.value.toFixed(2)}</div>`;
+                    }
+                }
             }
         });
+        
+        
         
         chartContainerRef.current.addEventListener('mouseout', function() {
             toolTip.style.display = 'none';
@@ -148,9 +161,9 @@ export default function GraphicLayout({ info }) {
         setIsLoading(false);
 
         return () => {
-            window.removeEventListener('resize', handleResize)
+            /* chartContainerRef.current.removeEventListener('mouseout', () => {toolTip.style.display = 'none'});  */ 
             chart.unsubscribeCrosshairMove();
-            chartContainerRef.current.removeEventListener('mouseout');  
+            window.removeEventListener('resize', handleResize)
             chart.remove();
         }
 
@@ -159,7 +172,7 @@ export default function GraphicLayout({ info }) {
     return (
         <>
             <article ref={chartContainerRef} className={styles.chartContainer}>
-                {isLoading && < GraphicLoader />}
+                {isLoading && <span>Cargando ...</span>}
             </article>
         </>
     )
